@@ -60,9 +60,10 @@ class VLLMSettings(BaseSettings):
         )
 
 
-class AppSettings(BaseSettings):
+class Settings(BaseSettings):
     """应用全局配置"""
 
+    # 可以手动指定 .env 文件的位置, 而不使用load_env
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
@@ -70,36 +71,33 @@ class AppSettings(BaseSettings):
     )
 
     app_name: str = "VLLM-App"
-    debug: bool = False
+    debug: bool = True
     log_level: str = "info"
 
-    # 嵌套 VLLM 配置（仅此一处，自动实例化）
-    vllm: VLLMSettings = Field(default_factory=VLLMSettings)
-
-
-# 单例获取函数
-@lru_cache()
-def get_vllm_settings() -> VLLMSettings:
-    """获取 VLLM 配置"""
-    return VLLMSettings()
+    # 嵌套 VLLM 配置，支持 settings.vllm_config.xxx 访问
+    vllm_config: VLLMSettings = Field(default_factory=VLLMSettings)
 
 
 @lru_cache()
-def get_settings() -> AppSettings:
-    """获取完整应用配置"""
-    return AppSettings()
+def get_settings() -> Settings:
+    """获取全局配置单例"""
+    return Settings()
 
 
-# 导出便捷变量
-vllm_config = get_vllm_settings()
-settings = get_settings()
+# 导出全局 settings 对象
+env_settings = get_settings()
 
 
 if __name__ == "__main__":
-    print("=== VLLM 配置信息 ===")
-    print(f"API Key: {vllm_config.vllm_api_key[:10]}...{vllm_config.vllm_api_key[-4:]}")
-    print(f"Base URL: {vllm_config.api_base}")
-    print(f"Model: {vllm_config.vllm_model_name}")
-    print(f"Chat URL: {vllm_config.chat_completion_url}")
-    print(f"Temperature: {vllm_config.vllm_temperature}")
-    print(f"Max Tokens: {vllm_config.vllm_max_tokens}")
+    print("=== 全局配置信息 ===")
+    print(f"App Name: {env_settings.app_name}")
+    print(f"Debug Mode: {env_settings.debug}")
+    print("\n=== VLLM 配置信息 ===")
+    print(
+        f"API Key: {env_settings.vllm_config.vllm_api_key[:10]}...{env_settings.vllm_config.vllm_api_key[-4:]}"
+    )
+    print(f"Base URL: {env_settings.vllm_config.api_base}")
+    print(f"Model: {env_settings.vllm_config.vllm_model_name}")
+    print(f"Chat URL: {env_settings.vllm_config.chat_completion_url}")
+    print(f"Temperature: {env_settings.vllm_config.vllm_temperature}")
+    print(f"Max Tokens: {env_settings.vllm_config.vllm_max_tokens}")
