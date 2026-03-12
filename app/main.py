@@ -1,7 +1,7 @@
 from app.config.settings import env_settings
 
 
-from app.demo.model_ask import main as demo_main
+from app.demo.model_ask import stream_output
 
 
 def main():
@@ -18,7 +18,7 @@ def main():
     print(f"Temperature: {env_settings.vllm.vllm_temperature}")
     print(f"Max Tokens: {env_settings.vllm.vllm_max_tokens}")
 
-    demo_main()
+    stream_output()
 
 
 if __name__ == "__main__":

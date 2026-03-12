@@ -1,5 +1,6 @@
 from langgraph.graph import START, StateGraph, END
 from langchain_openai import ChatOpenAI
+from langchain.messages import AIMessage, HumanMessage, SystemMessage
 from app.config.settings import env_settings
 
 
@@ -11,16 +12,20 @@ llm = ChatOpenAI(
 )
 
 
-def main():
-    response = llm.invoke("hello")
-    print(response)
-    print("-" * 50)
-    print(response.content)
-    # print(f"total tokens = {response.response_metadata['token_usage']['total_tokens']}")
-    print(
-        f"total tokens = {response.response_metadata.get('token_usage')['total_tokens']}"
-    )
+def stream_output():
+    # 构建 LangChain 兼容的消息列表
+    messages = [
+        SystemMessage(content="   "),
+        HumanMessage(content="  "),
+    ]
+
+    # 使用 stream 方法进行流式调用
+    for chunk in llm.stream(messages):
+        # chunk 是一个 AIMessageChunk 对象，打印其内容
+        print(chunk.content, end="", flush=True)
+
+    print("\n")
 
 
 if __name__ == "__main__":
-    main()
+    stream_output()
