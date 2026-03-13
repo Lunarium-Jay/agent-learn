@@ -27,5 +27,14 @@ def stream_output():
     print("\n")
 
 
+async def async_stream_output():
+    message = [SystemMessage(content="  "), HumanMessage(content="你好")]
+
+    async for chunk in llm.astream(message):
+        print(f"{chunk.content}", end="", flush=True)
+
+    print("\n")
+
+
 if __name__ == "__main__":
     stream_output()

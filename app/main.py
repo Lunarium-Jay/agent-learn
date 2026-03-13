@@ -1,10 +1,10 @@
 from app.config.settings import env_settings
 
 
-from app.demo.model_ask import stream_output
+from app.demo.model_ask import async_stream_output
 
 
-def main():
+async def main():
     print("=== 全局配置信息 ===")
     print(f"App Name: {env_settings.app_name}")
     print(f"Debug Mode: {env_settings.debug}")
@@ -18,7 +18,7 @@ def main():
     print(f"Temperature: {env_settings.vllm.vllm_temperature}")
     print(f"Max Tokens: {env_settings.vllm.vllm_max_tokens}")
 
-    stream_output()
+    await async_stream_output()
 
 
 if __name__ == "__main__":
